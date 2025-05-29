@@ -23,7 +23,7 @@ public class IntervaloService {
         this.sessaoRepository = sessaoRepository;
     }
 
-    public void iniciarIntervalo(IntervaloDTO intervaloDTO) {
+    public Long iniciarIntervalo(IntervaloDTO intervaloDTO) {
         Sessao sessao = sessaoRepository.findById(intervaloDTO.getSessaoId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Sessão não encontrada com o id: " + intervaloDTO.getSessaoId()
@@ -32,6 +32,8 @@ public class IntervaloService {
         intervalo.setSessao(sessao);
         intervalo.setInicio(LocalDateTime.now());
         this.intervaloRepository.save(intervalo);
+
+        return intervalo.getIntervaloId();
     }
 
     public List<Intervalo> listarIntervalos(){

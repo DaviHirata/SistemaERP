@@ -11,6 +11,7 @@ import ufsm.poli.csi.SistemaERP.dto.SessaoDTO;
 import ufsm.poli.csi.SistemaERP.model.Sessao;
 import ufsm.poli.csi.SistemaERP.service.SessaoService;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,8 +28,8 @@ public class SessaoController {
     @PostMapping("/iniciar")
     public ResponseEntity<?> iniciarSessao(@RequestBody SessaoDTO sessaoDTO) {
         try {
-            sessaoService.iniciarSessao(sessaoDTO);
-            return ResponseEntity.ok("Sessão iniciada");
+            Long sessaoId = sessaoService.iniciarSessao(sessaoDTO);
+            return ResponseEntity.ok(Collections.singletonMap("sessaoId", sessaoId));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {

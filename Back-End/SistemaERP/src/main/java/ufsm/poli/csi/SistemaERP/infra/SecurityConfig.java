@@ -12,6 +12,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import ufsm.poli.csi.SistemaERP.infra.AutenticacaoFilter;
 
 @Configuration
@@ -25,12 +28,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
+                .cors(cors -> {})
                 .csrf(csrf-> csrf.disable())
                 .sessionManagement(sm-> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth->
                         auth
                                 // Endpoints para usuários
-                                .requestMatchers(HttpMethod.POST, "/login").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/usuario/cadastrar").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/usuario/listar")
                                     .hasAnyAuthority("administrador", "presidente")
@@ -48,6 +52,10 @@ public class SecurityConfig {
                                     .hasAnyAuthority("administrador", "presidente", "membro")
                                 .requestMatchers(HttpMethod.DELETE, "tarefa/deletarTarefa/{id}")
                                     .hasAnyAuthority("administrador", "presidente")
+                                .requestMatchers(HttpMethod.GET, "/tarefa/tarefas/{usuarioId}")
+                                    .hasAnyAuthority("administrador", "presidente", "membro")
+                                .requestMatchers(HttpMethod.GET, "/tarefa/buscarTarefa/{id}")
+                                    .hasAnyAuthority("administrador", "presidente", "membro")
 
                                 // Endpoint para sessões
                                 .requestMatchers(HttpMethod.POST, "/sessao/iniciar")
@@ -87,5 +95,34 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        // URLs permitidas (adicione outras se necessário)
+        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedOrigin("http://127.0.0.1:3000");
+
+        // Métodos HTTP permitidos
+        configuration.addAllowedMethod("GET");
+        configuration.addAllowedMethod("POST");
+        configuration.addAllowedMethod("PUT");
+        configuration.addAllowedMethod("DELETE");
+        configuration.addAllowedMethod("OPTIONS");
+
+        // Headers permitidos
+        configuration.addAllowedHeader("*");
+
+        // Permitir envio de cookies/credenciais
+        configuration.setAllowCredentials(true);
+
+        // Headers que podem ser expostos ao cliente
+        configuration.addExposedHeader("Authorization");
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

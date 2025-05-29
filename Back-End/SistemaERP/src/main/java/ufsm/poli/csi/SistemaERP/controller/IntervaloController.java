@@ -10,6 +10,7 @@ import ufsm.poli.csi.SistemaERP.dto.IntervaloDTO;
 import ufsm.poli.csi.SistemaERP.model.Intervalo;
 import ufsm.poli.csi.SistemaERP.service.IntervaloService;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,8 +27,8 @@ public class IntervaloController {
     @PostMapping("/pausar")
     public ResponseEntity<?> iniciarPausa(@RequestBody IntervaloDTO intervaloDTO) {
         try {
-            intervaloService.iniciarIntervalo(intervaloDTO);
-            return ResponseEntity.ok("Intervalo iniciado");
+            Long intervaloId = intervaloService.iniciarIntervalo(intervaloDTO);
+            return ResponseEntity.ok(Collections.singletonMap("intervaloId", intervaloId));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {

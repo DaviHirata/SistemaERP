@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ufsm.poli.csi.SistemaERP.dto.TarefaDTO;
 import ufsm.poli.csi.SistemaERP.model.Tarefa;
+import ufsm.poli.csi.SistemaERP.repository.TarefaRepository;
 import ufsm.poli.csi.SistemaERP.service.TarefaService;
 
 import java.util.List;
@@ -19,9 +20,11 @@ import java.util.stream.Collectors;
 @Tag(name = "Tarefa", description = "Área para operações de CRUD com tarefas")
 public class TarefaController {
     private final TarefaService tarefaService;
+    private final TarefaRepository tarefaRepository;
 
-    public TarefaController(TarefaService tarefaService) {
+    public TarefaController(TarefaService tarefaService, TarefaRepository tarefaRepository) {
         this.tarefaService = tarefaService;
+        this.tarefaRepository = tarefaRepository;
     }
 
     @PostMapping("/salvar")
@@ -41,6 +44,24 @@ public class TarefaController {
     public List<TarefaDTO> listarTarefas() {
         return this.tarefaService.listarTarefas().stream().
                 map(TarefaDTO::new).collect(Collectors.toList());
+    }
+
+    @GetMapping("/tarefas/{usuarioId}")
+    public ResponseEntity<List<TarefaDTO>> listarTarefasDoUsuario(@PathVariable Long usuarioId) {
+        List<Tarefa> tarefas = tarefaRepository.findTarefaByUsuarioUsuarioId(usuarioId);
+        List<TarefaDTO> dtos = tarefas.stream().map(TarefaDTO::new).collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
+    }
+
+
+    @GetMapping("/buscarTarefa/{id}")
+    public ResponseEntity<TarefaDTO> buscarTarefa(@PathVariable Long id) {
+        try {
+            Tarefa tarefa = tarefaService.buscarTarefaPorId(id);
+            return ResponseEntity.ok(new TarefaDTO(tarefa));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     @PutMapping("/atualizarTarefa")

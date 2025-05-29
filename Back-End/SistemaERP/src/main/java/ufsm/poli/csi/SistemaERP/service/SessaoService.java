@@ -29,7 +29,7 @@ public class SessaoService {
         this.intervaloService = intervaloService;
     }
 
-    public void iniciarSessao(SessaoDTO sessaoDTO) {
+    public Long iniciarSessao(SessaoDTO sessaoDTO) {
         Tarefa tarefa = tarefaRepository.findById(sessaoDTO.getTarefaId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Tarefa não encontrada com id: " + sessaoDTO.getTarefaId()));
@@ -39,6 +39,8 @@ public class SessaoService {
         sessao.setInicioSessao(LocalDateTime.now());
         sessao.setValidado(false);
         this.sessaoRepository.save(sessao);
+
+        return sessao.getSessaoId();
     }
 
     public List<Sessao> listarSessoes(){
