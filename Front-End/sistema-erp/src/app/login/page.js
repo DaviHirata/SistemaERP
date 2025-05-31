@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/context/UserContext";
 import api from "@/services/api";
 
 export default function LoginPage() {
@@ -10,6 +11,7 @@ export default function LoginPage() {
   const [senha, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { setUser } = useUser();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -18,16 +20,20 @@ export default function LoginPage() {
 
     try {
         const response = await api.post('/api/login', {email, senha});
-        
+        const { token, usuario } = response.data;
         console.log(response.data);
 
         if (response.data && response.data.token) {
-            localStorage.setItem('token', response.data.token);
-
+            /*localStorage.setItem('token', response.data.token);
             if (response.data.usuario) {
                 localStorage.setItem('usuario', JSON.stringify(response.data.usuario));
+                setUser(response.data.usuario);
             }
 
+            router.push("/");*/
+            localStorage.setItem('token', token);
+            localStorage.setItem('usuario', JSON.stringify(usuario));
+            setUser(usuario);
             router.push("/");
         } else {
             setError("Resposta de login inválida");

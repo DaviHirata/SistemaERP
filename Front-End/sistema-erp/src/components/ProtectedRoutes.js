@@ -8,12 +8,12 @@ export default function ProtectedRoute({ children }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!authUtils.isAuthenticated()) {
+    if (!authUtils.isAuthenticated() && !loadingUser) {
       router.push('/login');
     } else {
       setIsLoading(false);
     }
-  }, [router]);
+  }, [router, loadingUser]);
 
   if (isLoading) {
     return (

@@ -1,26 +1,32 @@
-export default function Topbar({ user }) {
-  return (
-    <div className="bg-blue-800 h-14 px-6 flex justify-between items-center">
-      {/* Lado esquerdo: Logo da empresa */}
-      <div className="text-white font-bold text-lg">
-        {/* Substituir por <img src="/logo.png" /> */}
-        Sistema ERP
-      </div>
+"use client";
 
-      {/* Lado direito: Usuário */}
-      <div className="flex items-center space-x-2">
-        {user?.photoUrl ? (
-          <img
-            src={user.photoUrl}
-            alt="User"
-            className="w-8 h-8 rounded-full object-cover"
+import { useUser } from "@/context/UserContext";
+
+export default function Topbar() {
+  const { user } = useUser();
+
+  return (
+    <div className="fixed top-0 left-0 right-0 h-16 flex items-center justify-between px-6 z-40 border-b-2" style={{backgroundColor: '#002E6B', borderBottomColor: '#004DB3'}}>
+      <div className="flex items-center">
+        <h1 className="text-white text-xl font-semibold">Sistema ERP</h1>
+      </div>
+      <div className="flex items-center space-x-3">
+        {/*{user?.photoUrl ? (
+          <img 
+            src={user.photoUrl} 
+            alt="User" 
+            className="w-8 h-8 rounded-full"
           />
         ) : (
-          <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
-            {user?.name?.charAt(0).toUpperCase() || "?"}
+          <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+            <span className="font-semibold text-sm" style={{color: '#002E6B'}}>
+              {user?.nomeCompleto?.charAt(0).toUpperCase() || "?"}
+            </span>
           </div>
-        )}
-        <span className="text-blue-300">{user?.name || "Usuário"}</span>
+        )}*/}
+        <span className="text-white text-sm">
+          {user?.nomeCompleto || "Usuário"}
+        </span>
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ const api = axios.create({
     baseURL: 'http://localhost:8080/SistemaERP',
 });
 
-// Interceptor para adicionar o token automaticamente nas requisições
+// Interceptor para adicionar o token automaticamente nas REQUISIÇÕES
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token');
@@ -18,16 +18,17 @@ api.interceptors.request.use(
     }
 );
 
-// Interceptor para tratar as respostas
-api.interceptors.request.use (
+// Interceptor para tratar as RESPOSTAS
+api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
             localStorage.removeItem('token');
+            localStorage.removeItem('usuario');
             window.location.href = '/login';
         }
         return Promise.reject(error);
     }
-)
+);
 
 export default api;

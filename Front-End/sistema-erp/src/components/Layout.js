@@ -1,14 +1,21 @@
 import Sidebar from './Sidebar.js';
 import Topbar from './Topbar.js';
+import { useUser } from "@/context/UserContext";
 
-export default function Layout({ children, user }) {
-  return (
-    <div className="flex h-screen bg-blue-900 text-white">
-      <Sidebar />
-      <div className="flex flex-col flex-1">
-        <Topbar user={user} />
-        <main className="flex-1 p-6">{children}</main>
-      </div>
-    </div>
-  );
+export default function Layout({ children }) {
+  const { user } = useUser();
+  
+    return (
+        <div className="min-h-screen" style={{backgroundColor: '#003A86'}}>
+            <Sidebar />
+            <Topbar user={user} />
+            
+            {/* Main content area */}
+            <div className="ml-20 pt-16">
+                <div className="p-6">
+                    {children}
+                </div>
+            </div>
+        </div>
+    );
 }

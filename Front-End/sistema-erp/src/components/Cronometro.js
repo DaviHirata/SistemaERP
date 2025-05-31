@@ -28,6 +28,28 @@ export default function Cronometro() {
     return () => clearInterval(intervaloRef.current);
   }, [ativo, pausado]);
 
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      // Só mostra o alerta se há uma sessão ativa
+      if (ativo && sessaoId) {
+        const message = 'Você tem uma sessão de cronômetro ativa. Se recarregar a página, o cronômetro será zerado e você perderá a sessão atual. Tem certeza que deseja continuar?';
+        e.preventDefault();
+        e.returnValue = message; // Para navegadores mais antigos
+        return message; // Para navegadores modernos
+      }
+    };
+
+    // Adiciona o event listener quando há uma sessão ativa
+    if (ativo && sessaoId) {
+      window.addEventListener('beforeunload', handleBeforeUnload);
+    }
+
+    // Remove o event listener quando a sessão não está ativa ou no cleanup
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [ativo, sessaoId]);
+
   const formatarTempo = () => {
     const h = String(Math.floor(tempo / 3600)).padStart(2, '0');
     const m = String(Math.floor((tempo % 3600) / 60)).padStart(2, '0');
@@ -40,9 +62,17 @@ export default function Cronometro() {
     setError("");
 
     try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError("Token de autenticação não encontrado. Faça login novamente.");
+        window.location.href = '/login';
+        return;
+      }
+
       const response = await api.post("/sessao/iniciar", {
         tarefaId: 1
       });
+      
       if (response.data) {
         setAtivo(true);
         setSessaoId(response.data.sessaoId || response.data.id);
@@ -50,12 +80,18 @@ export default function Cronometro() {
       }
     } catch (error) {
       console.error("Erro ao iniciar sessão: ", error);
-      setError("Erro ao iniciar sessão");
 
       if (error.response?.status === 401) {
         setError("Sessão expirada. Faça login novamente.");
+        localStorage.removeItem('token');
+        localStorage.removeItem('usuario');
+        window.location.href = '/login';
+      } else if (error.response?.status === 403) {
+        setError("Acesso negado. Verifique suas permissões ou faça login novamente.");
       } else if (error.response?.data?.message) {
         setError(error.response.data.message);
+      } else {
+        setError("Erro ao iniciar sessão. Tente novamente.");
       }
     } finally {
       setLoading(false);
@@ -174,7 +210,7 @@ export default function Cronometro() {
       )}
 
       {/* Cronômetro */}
-      <div className="bg-blue-200 text-blue-900 text-6xl font-mono rounded-lg px-10 py-6">
+      <div className="text-blue-900 text-6xl font-mono rounded-lg px-10 py-6" style={{backgroundColor: '#B0C8E7'}}>
         {formatarTempo()}
       </div>
 
