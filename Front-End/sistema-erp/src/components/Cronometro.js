@@ -8,14 +8,49 @@ export default function Cronometro() {
   const [pausado, setPausado] = useState(false);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [tarefas, setTarefas] = useState([]);
+  const [tarefasFiltradas, setTarefasFiltradas] = useState([]);
   const [tarefaSelecionada, setTarefaSelecionada] = useState(null);
   const [sessaoId, setSessaoId] = useState(null);
   const [intervaloId, setIntervaloId] = useState(null);
   const [buscaTarefa, setBuscaTarefa] = useState("");
-  const [mostrarTarefas, setMostrarTarefas] = useState(false);
+  const [mostrarDropdown, setMostrarDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loadingTarefas, setLoadingTarefas] = useState(false);
   const [error, setError] = useState("");
   const intervaloRef = useRef(null);
+  const dropdownRef = useRef(null);
+
+  // Carregar tarefas do usuário ao montar o componente
+  useEffect(() => {
+    buscarTarefasUsuario();
+  }, []);
+
+  // Fechar dropdown quando clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setMostrarDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Filtrar tarefas conforme o usuário digita
+  useEffect(() => {
+    if (buscaTarefa.trim() === "") {
+      setTarefasFiltradas(tarefas);
+    } else {
+      const filtradas = tarefas.filter(tarefa => 
+        tarefa.titulo.toLowerCase().includes(buscaTarefa.toLowerCase()) ||
+        tarefa.descricao?.toLowerCase().includes(buscaTarefa.toLowerCase())
+      );
+      setTarefasFiltradas(filtradas);
+    }
+  }, [buscaTarefa, tarefas]);
 
   useEffect(() => {
     if (ativo && !pausado) {
@@ -30,25 +65,55 @@ export default function Cronometro() {
 
   useEffect(() => {
     const handleBeforeUnload = (e) => {
-      // Só mostra o alerta se há uma sessão ativa
       if (ativo && sessaoId) {
         const message = 'Você tem uma sessão de cronômetro ativa. Se recarregar a página, o cronômetro será zerado e você perderá a sessão atual. Tem certeza que deseja continuar?';
         e.preventDefault();
-        e.returnValue = message; // Para navegadores mais antigos
-        return message; // Para navegadores modernos
+        e.returnValue = message;
+        return message;
       }
     };
 
-    // Adiciona o event listener quando há uma sessão ativa
     if (ativo && sessaoId) {
       window.addEventListener('beforeunload', handleBeforeUnload);
     }
 
-    // Remove o event listener quando a sessão não está ativa ou no cleanup
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [ativo, sessaoId]);
+
+  // Buscar tarefas vinculadas ao usuário
+  const buscarTarefasUsuario = async () => {
+    setLoadingTarefas(true);
+    try {
+      // Obter o usuário do localStorage
+      const userData = localStorage.getItem('usuario');
+      if (!userData) {
+        setError("Dados do usuário não encontrados. Faça login novamente.");
+        window.location.href = '/login';
+        return;
+      }
+
+      const usuario = JSON.parse(userData);
+      const usuarioId = usuario.usuarioId || usuario.id;
+
+      if (!usuarioId) {
+        setError("ID do usuário não encontrado. Faça login novamente.");
+        return;
+      }
+
+      const response = await api.get(`/tarefa/tarefas/${usuarioId}`);
+      if (response.data) {
+        setTarefas(response.data);
+        setTarefasFiltradas(response.data);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar tarefas:", error);
+      setError("Erro ao carregar tarefas do usuário");
+    } finally {
+      setLoadingTarefas(false);
+    }
+  };
 
   const formatarTempo = () => {
     const h = String(Math.floor(tempo / 3600)).padStart(2, '0');
@@ -58,6 +123,11 @@ export default function Cronometro() {
   };
 
   const iniciarSessao = async () => {
+    if (!tarefaSelecionada) {
+      setError("Selecione uma tarefa antes de iniciar a sessão");
+      return;
+    }
+
     setLoading(true);
     setError("");
 
@@ -70,7 +140,7 @@ export default function Cronometro() {
       }
 
       const response = await api.post("/sessao/iniciar", {
-        tarefaId: 1
+        tarefaId: tarefaSelecionada.tarefaId
       });
       
       if (response.data) {
@@ -112,7 +182,7 @@ export default function Cronometro() {
         setPausado(false);
         setMostrarModal(false);
         setSessaoId(null);
-        console.log("Sessão iniciada com sucesso.");
+        console.log("Sessão encerrada com sucesso.");
       } 
     } catch (error) {
       console.error("Erro ao encerrar sessão: ", error);
@@ -160,6 +230,18 @@ export default function Cronometro() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const selecionarTarefa = (tarefa) => {
+    setTarefaSelecionada(tarefa);
+    setBuscaTarefa(tarefa.titulo);
+    setMostrarDropdown(false);
+  };
+
+  const limparSelecao = () => {
+    setTarefaSelecionada(null);
+    setBuscaTarefa("");
+    setMostrarDropdown(false);
   };
 
   return (
@@ -222,13 +304,95 @@ export default function Cronometro() {
         </div>
       )}
 
+      {/* Tarefa selecionada */}
+      {tarefaSelecionada && (
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded">
+          <strong>Tarefa selecionada:</strong> {tarefaSelecionada.titulo}
+          {tarefaSelecionada.descricao && (
+            <div className="text-sm text-green-600">{tarefaSelecionada.descricao}</div>
+          )}
+          <div className="text-xs text-green-500">
+            Status: {tarefaSelecionada.status} | Prazo: {new Date(tarefaSelecionada.prazo).toLocaleDateString('pt-BR')}
+          </div>
+        </div>
+      )}
+
+      {/* Busca e seleção de tarefa */}
+      {!ativo && (
+        <div className="flex flex-col space-y-2 w-full max-w-md" ref={dropdownRef}>
+          <div className="flex space-x-2">
+            <div className="relative flex-1">
+              <input 
+                type="text" 
+                placeholder="Buscar tarefa..." 
+                value={buscaTarefa}
+                onChange={(e) => {
+                  setBuscaTarefa(e.target.value);
+                  setMostrarDropdown(true);
+                }}
+                onFocus={() => setMostrarDropdown(true)}
+                className="w-full bg-blue-100 text-blue-900 px-3 py-2 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                disabled={loadingTarefas}
+              />
+              
+              {/* Dropdown de tarefas */}
+              {mostrarDropdown && (
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                  {loadingTarefas ? (
+                    <div className="px-3 py-2 text-gray-500">Carregando tarefas...</div>
+                  ) : tarefasFiltradas.length > 0 ? (
+                    tarefasFiltradas.map((tarefa) => (
+                      <div
+                        key={tarefa.tarefaId}
+                        onClick={() => selecionarTarefa(tarefa)}
+                        className="px-3 py-2 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                      >
+                        <div className="font-medium text-gray-800">{tarefa.titulo}</div>
+                        {tarefa.descricao && (
+                          <div className="text-sm text-gray-600">{tarefa.descricao}</div>
+                        )}
+                        <div className="flex justify-between text-xs text-blue-600 mt-1">
+                          <span>Status: {tarefa.status}</span>
+                          <span>Prazo: {new Date(tarefa.prazo).toLocaleDateString('pt-BR')}</span>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="px-3 py-2 text-gray-500">
+                      {buscaTarefa ? 'Nenhuma tarefa encontrada' : 'Nenhuma tarefa disponível'}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            
+            {tarefaSelecionada && (
+              <button 
+                onClick={limparSelecao}
+                className="text-red-600 hover:text-red-800 px-3 py-2 border border-red-300 rounded hover:bg-red-50"
+              >
+                Limpar
+              </button>
+            )}
+            
+            <button 
+              onClick={buscarTarefasUsuario}
+              disabled={loadingTarefas}
+              className="text-blue-600 hover:text-blue-800 px-3 py-2 border border-blue-300 rounded hover:bg-blue-50 disabled:opacity-50"
+            >
+              {loadingTarefas ? '...' : '🔄'}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Botões de controle */}
       {!ativo && (
         <button 
           onClick={iniciarSessao}
-          disabled={loading}
+          disabled={loading || !tarefaSelecionada}
           className={`px-6 py-3 rounded text-white font-semibold ${
-            loading 
+            loading || !tarefaSelecionada
               ? 'bg-gray-500 cursor-not-allowed' 
               : 'bg-blue-700 hover:bg-blue-800'
           }`}
@@ -285,27 +449,6 @@ export default function Cronometro() {
         </div>
       )}
 
-      {/* Busca de tarefa (por enquanto só visual) */}
-      <div className="flex space-x-2 mt-4">
-        <input 
-          type="text" 
-          placeholder="Buscar task" 
-          value={buscaTarefa}
-          onChange={(e) => setBuscaTarefa(e.target.value)}
-          className="bg-blue-100 text-blue-900 px-3 py-2 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500" 
-        />
-        <button 
-          className="text-blue-600 hover:text-blue-800 px-3 py-2 border border-blue-300 rounded hover:bg-blue-50"
-          onClick={() => {
-            // Por enquanto, só um placeholder
-            console.log("Buscar tarefa:", buscaTarefa);
-            alert("Funcionalidade de busca será implementada em breve!");
-          }}
-        >
-          Vincular
-        </button>
-      </div>
-
       {/* Informações de debug (remover em produção) */}
       {process.env.NODE_ENV === 'development' && (
         <div className="text-xs text-gray-500 mt-4 p-2 bg-gray-100 rounded">
@@ -313,6 +456,8 @@ export default function Cronometro() {
           <div>Pausado: {pausado ? 'Sim' : 'Não'}</div>
           <div>Sessão ID: {sessaoId || 'Nenhum'}</div>
           <div>Intervalo ID: {intervaloId || 'Nenhum'}</div>
+          <div>Tarefa ID: {tarefaSelecionada?.tarefaId || 'Nenhuma'}</div>
+          <div>Total de tarefas: {tarefas.length}</div>
         </div>
       )}
     </div>
