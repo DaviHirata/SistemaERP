@@ -1,4 +1,4 @@
-import { Home, LogOut } from 'lucide-react';
+import { ClipboardList, Home, LogOut, ListCheck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export default function Sidebar() {
@@ -21,6 +21,10 @@ export default function Sidebar() {
         console.log("Logout realizado com sucesso");
     }
 
+    const handleTarefas = () => {
+        router.push("/tarefas");
+    }
+
      return (
         <div className="fixed left-0 top-16 w-20 flex flex-col items-center py-6 z-50" style={{backgroundColor: '#002E6B', height: 'calc(100vh - 4rem)'}}>            
             {/* Navigation Icons */}
@@ -33,19 +37,22 @@ export default function Sidebar() {
                 >
                     <Home size={20} className="text-white" />
                 </button>
-                
-                {/* Additional menu items - you can add more buttons here */}
-                <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{backgroundColor: 'rgba(255,255,255,0.1)'}}>
-                    <div className="w-6 h-6 rounded-full" style={{backgroundColor: 'rgba(255,255,255,0.2)'}}></div>
-                </div>
-                
-                <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{backgroundColor: 'rgba(255,255,255,0.1)'}}>
-                    <div className="w-6 h-6 rounded-full" style={{backgroundColor: 'rgba(255,255,255,0.2)'}}></div>
-                </div>
-                
-                <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{backgroundColor: 'rgba(255,255,255,0.1)'}}>
-                    <div className="w-6 h-6 rounded-full" style={{backgroundColor: 'rgba(255,255,255,0.2)'}}></div>
-                </div>
+
+                <button
+                    onClick={handleTarefas}
+                    className="w-12 h-12 hover:bg-blue-700 rounded-full flex items-center justify-center transition-colors"
+                    style={{backgroundColor: 'rgba(255,255,255,0.1)'}}
+                >
+                    <ClipboardList size={20} className="text-white"/>
+                </button>
+
+                <button
+                    onClick={handleTarefas}
+                    className="w-12 h-12 hover:bg-blue-700 rounded-full flex items-center justify-center transition-colors"
+                    style={{backgroundColor: 'rgba(255,255,255,0.1)'}}
+                >
+                    <ListCheck size={20} className="text-white"/>
+                </button>
             </div>
             
             {/* Logout Button */}

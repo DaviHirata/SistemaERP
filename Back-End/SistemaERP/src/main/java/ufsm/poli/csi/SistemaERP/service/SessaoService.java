@@ -34,6 +34,12 @@ public class SessaoService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Tarefa não encontrada com id: " + sessaoDTO.getTarefaId()));
 
+        // Atualizar o status da tarefa para "em_andamento" se ainda estiver "pendente"
+        if (tarefa.getStatus() == Tarefa.StatusTarefa.pendente) {
+            tarefa.setStatus(Tarefa.StatusTarefa.em_desenvolvimento);
+            tarefaRepository.save(tarefa);
+        }
+
         Sessao sessao = new Sessao();
         sessao.setTarefa(tarefa);
         sessao.setInicioSessao(LocalDateTime.now());
