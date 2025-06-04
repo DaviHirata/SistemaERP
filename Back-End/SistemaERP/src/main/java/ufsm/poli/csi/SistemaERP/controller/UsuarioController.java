@@ -6,10 +6,13 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+import ufsm.poli.csi.SistemaERP.dto.UsuarioDTO;
 import ufsm.poli.csi.SistemaERP.model.Usuario;
 import ufsm.poli.csi.SistemaERP.service.UsuarioService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/usuario")
@@ -30,6 +33,14 @@ public class UsuarioController {
     @GetMapping("/listar")
     public List<Usuario> listarUsuarios() {
         return usuarioService.listarUsuarios();
+    }
+
+    @GetMapping("/buscarUsuario/{id}")
+    public ResponseEntity<Map<String, String>> buscarUsuarioPorId(@PathVariable Long id) {
+        String nomeCompleto = usuarioService.buscarNomePorId(id);
+        Map<String, String> response = new HashMap<>();
+        response.put("nome", nomeCompleto);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/atualizarUsuario")

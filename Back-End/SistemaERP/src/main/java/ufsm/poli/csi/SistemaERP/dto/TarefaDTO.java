@@ -21,6 +21,7 @@ public class TarefaDTO {
     private Timestamp dataConclusao;
     private LocalDate prazo;
     private String status;
+    private Long totalHorasTrabalhadas;
     private Long usuarioId;
     private UsuarioDTO usuario;
 
@@ -32,6 +33,7 @@ public class TarefaDTO {
         this.dataConclusao = tarefa.getDataConclusao();
         this.prazo = tarefa.getPrazo();
         this.status = String.valueOf(tarefa.getStatus());
+        this.totalHorasTrabalhadas = tarefa.getTotalHorasTrabalhadas();
         this.usuario = new UsuarioDTO(tarefa.getUsuario());
         this.usuarioId = tarefa.getUsuario().getUsuarioId();
     }

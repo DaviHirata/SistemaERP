@@ -46,6 +46,12 @@ public class TarefaController {
                 map(TarefaDTO::new).collect(Collectors.toList());
     }
 
+    @GetMapping("/concluidas")
+    public List<TarefaDTO> listarConcluidas() {
+        return this.tarefaService.listarConcluidas().stream().
+                map(TarefaDTO::new).collect(Collectors.toList());
+    }
+
     @GetMapping("/tarefas/{usuarioId}")
     public ResponseEntity<List<TarefaDTO>> listarTarefasDoUsuario(@PathVariable Long usuarioId) {
         List<Tarefa> tarefas = tarefaRepository.findTarefaByUsuarioUsuarioId(usuarioId);

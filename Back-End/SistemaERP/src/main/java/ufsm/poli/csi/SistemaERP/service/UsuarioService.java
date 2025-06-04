@@ -31,6 +31,12 @@ public class UsuarioService {
         return this.usuarioRepository.findAll();
     }
 
+    public String buscarNomePorId(Long id) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado com o id: " + id));
+        return usuario.getNomeCompleto();
+    }
+
     public void atualizarUsuario(Usuario usuario) {
         Usuario usuarioAtual = this.usuarioRepository.findUsuarioByEmail(usuario.getEmail());
         usuarioAtual.setNomeCompleto(usuario.getNomeCompleto());

@@ -18,7 +18,7 @@ public class SessaoDTO {
     private LocalDateTime inicioSessao;
     private LocalDateTime fimSessao;
     private Duration duracaoTotal;
-    private boolean validado;
+    private Boolean validado;
     private Long tarefaId;
     private TarefaDTO tarefa;
 
@@ -27,7 +27,7 @@ public class SessaoDTO {
         this.inicioSessao = sessao.getInicioSessao();
         this.fimSessao = sessao.getFimSessao();
         this.duracaoTotal = sessao.getDuracaoTotal();
-        this.validado = sessao.isValidado();
+        this.validado = sessao.getValidado();
         this.tarefa = new TarefaDTO(sessao.getTarefa());
         this.tarefaId = sessao.getTarefa().getTarefaId();
     }

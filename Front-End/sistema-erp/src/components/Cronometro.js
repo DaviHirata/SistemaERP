@@ -297,12 +297,12 @@ export default function Cronometro() {
       </div>
 
       {/* Status da sessão */}
-      {sessaoId && (
+      {/*{sessaoId && (
         <div className="text-sm text-gray-600">
           Sessão ID: {sessaoId}
           {pausado && <span className=" - PAUSADA"></span>}
         </div>
-      )}
+      )}*/}
 
       {/* Tarefa selecionada */}
       {tarefaSelecionada && (
@@ -312,7 +312,7 @@ export default function Cronometro() {
             <div className="text-sm text-green-600">{tarefaSelecionada.descricao}</div>
           )}
           <div className="text-xs text-green-500">
-            Status: {tarefaSelecionada.status} | Prazo: {new Date(tarefaSelecionada.prazo).toLocaleDateString('pt-BR')}
+            {/*Status: {tarefaSelecionada.status} |*/} Prazo: {new Date(tarefaSelecionada.prazo).toLocaleDateString('pt-BR')}
           </div>
         </div>
       )}
@@ -450,7 +450,7 @@ export default function Cronometro() {
       )}
 
       {/* Informações de debug (remover em produção) */}
-      {process.env.NODE_ENV === 'development' && (
+      {/*{process.env.NODE_ENV === 'development' && (
         <div className="text-xs text-gray-500 mt-4 p-2 bg-gray-100 rounded">
           <div>Ativo: {ativo ? 'Sim' : 'Não'}</div>
           <div>Pausado: {pausado ? 'Sim' : 'Não'}</div>
@@ -459,7 +459,7 @@ export default function Cronometro() {
           <div>Tarefa ID: {tarefaSelecionada?.tarefaId || 'Nenhuma'}</div>
           <div>Total de tarefas: {tarefas.length}</div>
         </div>
-      )}
+      )}*/}
     </div>
   );
 }

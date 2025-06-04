@@ -53,6 +53,7 @@ public class SessaoService {
         return this.sessaoRepository.findAll();
     }
 
+    @Transactional
     public void calcularDuracaoSessao(Long sessaoId){
         Sessao sessao = sessaoRepository.findById(sessaoId)
                 .orElseThrow(() -> new EntityNotFoundException("Sessão não encontrada: " + sessaoId));
@@ -75,6 +76,13 @@ public class SessaoService {
 
         sessao.setDuracaoTotal(duracaoFinal);
         sessaoRepository.save(sessao);
+
+        // Associar a tarefa e atualizar tempo trabalhado
+        Tarefa tarefa = sessao.getTarefa();
+        if (tarefa != null) {
+            long nanos = duracaoFinal.toNanos();
+            tarefaRepository.incrementarNanosTrabalhados(tarefa.getTarefaId(), nanos);
+        }
     }
 
     public void validarSessao(Long sessaoId, String acao) {
@@ -112,5 +120,13 @@ public class SessaoService {
         Sessao sessao = sessaoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Sessão não encontrada com o id: " + id));
         sessaoRepository.delete(sessao);
+    }
+
+    public List<Sessao> buscarSessoesTarefa(Long tarefaId) {
+        List<Sessao> sessoes = this.sessaoRepository.findSessoesTarefa(tarefaId);
+        if (sessoes.isEmpty()) {
+            throw new EntityNotFoundException("Sessões não encontradas com tarefaId: " + tarefaId);
+        }
+        return sessoes;
     }
 }

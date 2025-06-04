@@ -50,6 +50,10 @@ public class TarefaService {
         return this.tarefasRepository.findAll();
     }
 
+    public List<Tarefa> listarConcluidas() {
+        return this.tarefasRepository.findTarefaConcluidas();
+    }
+
     public Tarefa buscarTarefaPorId(Long id) {
         return this.tarefasRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada com id: " + id));

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '@/services/api';
+import { formatarHoras } from '@/utils/formatarHoras';
 
 const ModalDetalhes = ({ tarefa, onClose, onSave }) => {
     const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ const ModalDetalhes = ({ tarefa, onClose, onSave }) => {
         dataInicio: '',
         status: '',
         prazo: '',
+        totalHorasTrabalhadas: '',
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -23,7 +25,8 @@ const ModalDetalhes = ({ tarefa, onClose, onSave }) => {
                 descricao: tarefa.descricao || '',
                 dataInicio: tarefa.dataInicio || '',
                 status: tarefa.status || '',
-                prazo: tarefa.prazo ? new Date(tarefa.prazo).toISOString().split('T')[0] : ''
+                prazo: tarefa.prazo ? new Date(tarefa.prazo).toISOString().split('T')[0] : '',
+                totalHorasTrabalhadas: tarefa.totalHorasTrabalhadas || '',
             });
         }
     }, [tarefa]);
@@ -65,6 +68,7 @@ const ModalDetalhes = ({ tarefa, onClose, onSave }) => {
                 dataInicio: formData.dataInicio,
                 status: formData.status,
                 prazo: new Date(formData.prazo).toISOString(),
+                totalHorasTrabalhadas: formData.totalHorasTrabalhadas,
             };
 
             await api.put(`/tarefa/atualizarTarefa`, tarefaAtualizada);
@@ -77,13 +81,6 @@ const ModalDetalhes = ({ tarefa, onClose, onSave }) => {
             setLoading(false);
         }
     }
-
-    const formatarHoras = (totalHoras) => {
-        if (!totalHoras) return '0h 0m';
-        const horas = Math.floor(totalHoras / 3600);
-        const minutos = Math.floor((totalHoras % 3600) / 60);
-        return `${horas}h ${minutos}m`;
-    };
 
     if (!tarefa) return null;
 
@@ -139,7 +136,8 @@ const ModalDetalhes = ({ tarefa, onClose, onSave }) => {
             <input 
               className="w-full border rounded px-2 py-1 bg-gray-100 text-black" 
               type="text"
-              value={formatarHoras(tarefa.totalHorasTrabalhadas)}
+              value={formatarHoras(formData.totalHorasTrabalhadas)}
+              //value={formData.totalHorasTrabalhadas}
               readOnly
             />
 
@@ -244,14 +242,14 @@ const MinhasTarefas = () => {
         return tarefas.filter((t) => t.status === status);
     };
 
-    const getStatusDisplayName = (status) => {
+    /*const getStatusDisplayName = (status) => {
         const statusMap = {
             'pendente': 'Pendentes',
             'em_desenvolvimento': 'Em Desenvolvimento',
             'concluido': 'Concluídos'
         };
         return statusMap[status] || status;
-    };
+    };*/
 
     const getStatusColor = (status) => {
     const colorMap = {
@@ -305,11 +303,11 @@ const MinhasTarefas = () => {
                 {tarefa.descricao}
               </p>
             )}
-            
+      
             <div className="flex justify-between items-center text-xs text-gray-500">
               <span>Prazo: {formatarPrazo(tarefa.prazo)}</span>
               {tarefa.totalHorasTrabalhadas > 0 && (
-                <span>{Math.floor(tarefa.totalHorasTrabalhadas / 3600)}h trabalhadas</span>
+                <span>{formatarHoras(tarefa.totalHorasTrabalhadas)} trabalhadas</span>
               )}
             </div>
           </div>
@@ -335,7 +333,7 @@ const MinhasTarefas = () => {
           disabled={loading}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
         >
-          {loading ? 'Atualizando...' : '🔄 Atualizar'}
+          {loading ? 'Atualizando...' : 'Atualizar'}
         </button>
       </div>
 

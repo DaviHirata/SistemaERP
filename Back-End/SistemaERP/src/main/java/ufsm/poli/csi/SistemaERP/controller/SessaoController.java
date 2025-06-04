@@ -8,7 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ufsm.poli.csi.SistemaERP.dto.SessaoDTO;
+import ufsm.poli.csi.SistemaERP.dto.TarefaDTO;
 import ufsm.poli.csi.SistemaERP.model.Sessao;
+import ufsm.poli.csi.SistemaERP.model.Tarefa;
 import ufsm.poli.csi.SistemaERP.service.SessaoService;
 
 import java.util.Collections;
@@ -68,5 +70,16 @@ public class SessaoController {
     public ResponseEntity<Void> validarSessao(@PathVariable Long id, @RequestParam String acao) {
         this.sessaoService.validarSessao(id, acao);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/sessoesTarefa/{tarefaId}")
+    public ResponseEntity<List<SessaoDTO>> listarSessoesTarefa(@PathVariable Long tarefaId) {
+        try {
+            List<Sessao> sessoes = sessaoService.buscarSessoesTarefa(tarefaId);
+            List<SessaoDTO> dtos = sessoes.stream().map(SessaoDTO::new).toList();
+            return ResponseEntity.ok(dtos);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 }

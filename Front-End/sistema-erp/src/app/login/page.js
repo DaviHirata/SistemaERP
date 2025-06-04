@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/context/UserContext";
 import api from "@/services/api";
+import { color } from "@mui/system";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,13 +25,6 @@ export default function LoginPage() {
         console.log(response.data);
 
         if (response.data && response.data.token) {
-            /*localStorage.setItem('token', response.data.token);
-            if (response.data.usuario) {
-                localStorage.setItem('usuario', JSON.stringify(response.data.usuario));
-                setUser(response.data.usuario);
-            }
-
-            router.push("/");*/
             localStorage.setItem('token', token);
             localStorage.setItem('usuario', JSON.stringify(usuario));
             setUser(usuario);
@@ -56,10 +50,10 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen">
       <div className="w-1/2 bg-cover bg-center" 
-           style={{ backgroundImage: "url('/imagem.png')" }}>
+           style={{ backgroundImage: "url('/bg_image_login.jpg')" }}>
       </div>
       
-      <div className="w-1/2 bg-blue-900 text-white flex flex-col justify-center items-center p-10">
+      <div className="w-1/2 text-white flex flex-col justify-center items-center p-10" style={{backgroundColor: '#002E6B'}}>
         <h1 className="text-2xl font-bold mb-2">Seja Bem-vindo</h1>
         <p className="mb-6">Faça seu login e acesse o sistema</p>
         
@@ -73,17 +67,17 @@ export default function LoginPage() {
           <input
             type="email"
             placeholder="Digite seu e-mail"
-            className="p-2 rounded text-black"
+            className="w-full h-12 px-4 rounded-md bg-white/20 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
             disabled={loading}
           />
-          
+
           <input
             type="password"
             placeholder="Digite sua senha"
-            className="p-2 rounded text-black"
+            className="w-full h-12 px-4 rounded-md bg-white/20 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white"
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
             required

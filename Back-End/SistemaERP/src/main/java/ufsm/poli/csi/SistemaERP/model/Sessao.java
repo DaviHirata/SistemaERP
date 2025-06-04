@@ -32,10 +32,9 @@ public class Sessao {
             "Calculado por ((fim_sessao - inicio_sessao) - duração do intervalo", example = "08:00:00")
     private Duration duracaoTotal;
 
-    @NonNull
     @Schema(description = "Verificação sobre a validade de uma sessão. Definido como falso por padrão." +
             "Será alterado após o administrador validar a sessão")
-    private boolean validado;
+    private Boolean validado;
 
     // Relacionamento com Tarefa
     @ManyToOne

@@ -42,12 +42,16 @@ public class SecurityConfig {
                                     .hasAnyAuthority("administrador", "presidente", "membro")
                                 .requestMatchers(HttpMethod.DELETE, "/usuario/deletarUsuario/{id}")
                                     .hasAnyAuthority("administrador", "presidente")
+                                .requestMatchers(HttpMethod.GET, "/usuario/buscarUsuario/{id}")
+                                    .hasAnyAuthority("administrador", "presidente")
 
                                 // Endpoint para tarefas
                                 .requestMatchers(HttpMethod.POST, "/tarefa/salvar")
                                     .hasAnyAuthority("administrador", "presidente")
                                 .requestMatchers(HttpMethod.GET, "/tarefa/listar")
                                     .hasAnyAuthority("administrador", "presidente", "membro")
+                                .requestMatchers(HttpMethod.GET, "/tarefa/concluidas")
+                                    .hasAnyAuthority("administrador", "presidente")
                                 .requestMatchers(HttpMethod.PUT, "tarefa/atualizarTarefa")
                                     .hasAnyAuthority("administrador", "presidente", "membro")
                                 .requestMatchers(HttpMethod.DELETE, "tarefa/deletarTarefa/{id}")
@@ -67,6 +71,8 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, "/sessao/deletarSessao/{id}")
                                     .hasAnyAuthority("administrador", "presidente")
                                 .requestMatchers(HttpMethod.PUT, "/sessao/validarSessao/{id}")
+                                    .hasAnyAuthority("administrador", "presidente")
+                                .requestMatchers("/sessao/sessoesTarefa/{tarefaId}")
                                     .hasAnyAuthority("administrador", "presidente")
 
                                 // Endpoint para intervalos

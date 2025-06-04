@@ -31,7 +31,7 @@ create table sessao_trabalho (
     inicio_sessao timestamp not null,
     fim_sessao timestamp,
     duracao_total bigint,
-    validado boolean default false,
+    validado boolean default null,
     foreign key (tarefa_id) references tarefa (tarefa_id) on delete cascade
 );
 
