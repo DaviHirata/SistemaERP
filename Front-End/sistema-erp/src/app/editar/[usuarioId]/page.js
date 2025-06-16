@@ -1,13 +1,15 @@
 "use client";
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import Layout from "@/components/Layout";
-import MinhasTarefas from "@/components/MinhasTarefas";
+import EditarUsuario from "@/components/EditarUsuario";
 import { useUser } from "@/context/UserContext";
 import ProtectedRoutes from "@/components/ProtectedRoutes";
 
-export default function TarefasPage() {
+export default function EditarUsuarioPage() {
   const router = useRouter();
+  const params = useParams();
+  const usuarioId = params.usuarioId;
   const { user, loadingUser } = useUser();
 
   useEffect(() => {
@@ -32,7 +34,7 @@ export default function TarefasPage() {
   return (
     <ProtectedRoutes>
       <Layout user={user}>
-        <MinhasTarefas />
+        <EditarUsuario usuarioId={usuarioId}/>
       </Layout>
     </ProtectedRoutes>
   );

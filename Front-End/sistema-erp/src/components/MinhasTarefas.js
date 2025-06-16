@@ -85,7 +85,7 @@ const ModalDetalhes = ({ tarefa, onClose, onSave }) => {
     if (!tarefa) return null;
 
     return (
-    <div className="fixed inset-0 bg-opacity-40 flex items-center justify-center z-50">
+    <div className="fixed inset-0 backdrop-blur-sm backdrop-brightness-75 flex items-center justify-center z-50">
       <div className="bg-white rounded-xl p-6 w-full max-w-2xl relative text-black">
         <h2 className="text-xl font-semibold mb-4 text-black">Detalhes da tarefa</h2>
         
@@ -261,11 +261,23 @@ const MinhasTarefas = () => {
   };
 
   const formatarPrazo = (prazo) => {
-    const dataPrazo = new Date(prazo);
+    let dataPrazo;
+    if (typeof prazo === 'string' && prazo.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        const [ano, mes, dia] = prazo.split('-');
+        dataPrazo = new Date(ano, mes - 1, dia); // mes - 1 porque Date usa 0-11
+    } else {
+        dataPrazo = new Date(prazo);
+    }
+    
     const hoje = new Date();
+    
+    // Zerar horário
+    dataPrazo.setHours(0, 0, 0, 0);
+    hoje.setHours(0, 0, 0, 0);
+    
     const diffTime = dataPrazo - hoje;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+   
     if (diffDays < 0) {
       return `Atrasada (${Math.abs(diffDays)} dias)`;
     } else if (diffDays === 0) {

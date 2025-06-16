@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Layout from "@/components/Layout";
-import MinhasTarefas from "@/components/MinhasTarefas";
+import CadastrarUsuario from "@/components/GerenciarUsuario";
 import { useUser } from "@/context/UserContext";
 import ProtectedRoutes from "@/components/ProtectedRoutes";
 
@@ -32,7 +32,7 @@ export default function TarefasPage() {
   return (
     <ProtectedRoutes>
       <Layout user={user}>
-        <MinhasTarefas />
+        <CadastrarUsuario />
       </Layout>
     </ProtectedRoutes>
   );

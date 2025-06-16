@@ -1,4 +1,4 @@
-import { ClipboardList, Home, LogOut, ListCheck } from 'lucide-react';
+import { Home, ClipboardList, ListCheck, FolderCog, LogOut, UserCog } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export default function Sidebar() {
@@ -29,6 +29,14 @@ export default function Sidebar() {
         router.push("/concluidas");
     }
 
+    const handleGerenciarTarefas = () => {
+        router.push("/gerenciarTarefas");
+    }
+
+    const handleCadastrarUsuario = () => {
+        router.push("/cadastrar");
+    }
+
      return (
         <div className="fixed left-0 top-16 w-20 flex flex-col items-center py-6 z-50" style={{backgroundColor: '#002E6B', height: 'calc(100vh - 4rem)'}}>            
             {/* Navigation Icons */}
@@ -56,6 +64,22 @@ export default function Sidebar() {
                     style={{backgroundColor: 'rgba(255,255,255,0.1)'}}
                 >
                     <ListCheck size={20} className="text-white"/>
+                </button>
+
+                <button
+                    onClick={handleGerenciarTarefas}
+                    className="w-12 h-12 hover:bg-blue-700 rounded-full flex items-center justify-center transition-colors"
+                    style={{backgroundColor: 'rgba(255,255,255,0.1)'}}
+                >
+                    <FolderCog size={20} className="text-white"/>
+                </button>
+
+                <button
+                    onClick={handleCadastrarUsuario}
+                    className="w-12 h-12 hover:bg-blue-700 rounded-full flex items-center justify-center transition-colors"
+                    style={{backgroundColor: 'rgba(255,255,255,0.1)'}}
+                >
+                    <UserCog size={20} className="text-white"/>
                 </button>
             </div>
             

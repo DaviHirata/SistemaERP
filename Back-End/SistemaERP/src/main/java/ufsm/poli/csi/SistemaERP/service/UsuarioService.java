@@ -31,17 +31,17 @@ public class UsuarioService {
         return this.usuarioRepository.findAll();
     }
 
-    public String buscarNomePorId(Long id) {
+    public Usuario buscarUsuarioPorId(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado com o id: " + id));
-        return usuario.getNomeCompleto();
+        return usuario;
     }
 
     public void atualizarUsuario(Usuario usuario) {
         Usuario usuarioAtual = this.usuarioRepository.findUsuarioByEmail(usuario.getEmail());
         usuarioAtual.setNomeCompleto(usuario.getNomeCompleto());
         usuarioAtual.setEmail(usuario.getEmail());
-        usuarioAtual.setSenha(usuario.getSenha());
+        usuarioAtual.setSenha(new BCryptPasswordEncoder().encode(usuario.getSenha()));
         usuarioAtual.setTipoUsuario(usuario.getTipoUsuario());
         usuarioAtual.setCargaHorariaSemanal(usuario.getCargaHorariaSemanal());
         usuarioAtual.setTarefas(usuario.getTarefas());

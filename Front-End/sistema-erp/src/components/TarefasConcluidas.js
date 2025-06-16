@@ -180,7 +180,7 @@ const ModalDetalhes = ({ tarefa, onClose, onSave }) => {
     if (!tarefa) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 backdrop-blur-sm backdrop-brightness-75 flex items-center justify-center z-50">
             <div className="bg-white rounded-xl p-6 w-full max-w-4xl relative text-black max-h-[90vh] overflow-y-auto">
                 <h2 className="text-xl font-semibold mb-6 text-black text-center">Detalhes da Tarefa</h2>
                 
@@ -366,7 +366,7 @@ const TarefasConcluidas = () => {
                             const userResponse = await api.get(`/usuario/buscarUsuario/${tarefa.usuarioId}`);
                             return {
                                 ...tarefa,
-                                nomeUsuario: userResponse.data?.nome || 'Usuário não encontrado'
+                                nomeUsuario: userResponse.data?.nomeCompleto || 'Usuário não encontrado'
                             };
                         } catch (error) {
                             console.error(`Erro ao buscar usuário ${tarefa.usuarioId}:`, error);

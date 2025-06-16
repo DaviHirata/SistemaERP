@@ -1,5 +1,6 @@
 package ufsm.poli.csi.SistemaERP.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -49,6 +50,7 @@ public class Usuario {
 
     // Relacionamento com Tarefa
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @JsonIgnore
     @Schema(description = "Lista de tarefas atribuídas ao usuário")
     private List<Tarefa> tarefas;
 }

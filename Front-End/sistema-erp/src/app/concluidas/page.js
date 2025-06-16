@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Layout from "@/components/Layout";
 import TarefasConcluidas from "@/components/TarefasConcluidas";
 import { useUser } from "@/context/UserContext";
+import ProtectedRoutes from "@/components/ProtectedRoutes";
 
 export default function TarefasPage() {
   const router = useRouter();
@@ -29,8 +30,10 @@ export default function TarefasPage() {
   }
 
   return (
-    <Layout user={user}>
-      <TarefasConcluidas />
-    </Layout>
+    <ProtectedRoutes>
+      <Layout user={user}>
+        <TarefasConcluidas />
+      </Layout>
+    </ProtectedRoutes>
   );
 }

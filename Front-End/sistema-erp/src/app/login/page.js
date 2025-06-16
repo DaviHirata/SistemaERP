@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/context/UserContext";
 import api from "@/services/api";
-import { color } from "@mui/system";
 
 export default function LoginPage() {
   const router = useRouter();

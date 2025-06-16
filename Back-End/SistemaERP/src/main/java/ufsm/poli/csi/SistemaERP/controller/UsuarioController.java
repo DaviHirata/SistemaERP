@@ -35,12 +35,10 @@ public class UsuarioController {
         return usuarioService.listarUsuarios();
     }
 
-    @GetMapping("/buscarUsuario/{id}")
-    public ResponseEntity<Map<String, String>> buscarUsuarioPorId(@PathVariable Long id) {
-        String nomeCompleto = usuarioService.buscarNomePorId(id);
-        Map<String, String> response = new HashMap<>();
-        response.put("nome", nomeCompleto);
-        return ResponseEntity.ok(response);
+    @GetMapping("/buscarUsuario/{usuarioId}")
+    public ResponseEntity<Usuario> buscarUsuarioPorId(@PathVariable Long usuarioId) {
+        Usuario usuario = usuarioService.buscarUsuarioPorId(usuarioId);
+        return ResponseEntity.ok(usuario);
     }
 
     @PutMapping("/atualizarUsuario")

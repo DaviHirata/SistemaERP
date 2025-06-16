@@ -42,7 +42,11 @@ public class TarefaService {
         tarefa.setDescricao(tarefaDTO.getDescricao());
         tarefa.setPrazo(tarefaDTO.getPrazo());
         tarefa.setStatus(Tarefa.StatusTarefa.pendente);
-        tarefa.setDataInicio(Timestamp.valueOf(LocalDateTime.now()));
+        if (tarefaDTO.getDataInicio() != null) {
+            tarefa.setDataInicio(tarefaDTO.getDataInicio());
+        } else {
+            tarefa.setDataInicio(Timestamp.valueOf(LocalDateTime.now()));
+        }
         this.tarefasRepository.save(tarefa);
     }
 

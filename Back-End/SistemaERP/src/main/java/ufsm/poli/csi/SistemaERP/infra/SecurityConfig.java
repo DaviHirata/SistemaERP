@@ -35,7 +35,8 @@ public class SecurityConfig {
                         auth
                                 // Endpoints para usuários
                                 .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/usuario/cadastrar").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/usuario/cadastrar")
+                                    .permitAll()
                                 .requestMatchers(HttpMethod.GET, "/usuario/listar")
                                     .hasAnyAuthority("administrador", "presidente")
                                 .requestMatchers(HttpMethod.PUT, "/usuario/atualizarUsuario")
@@ -49,7 +50,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/tarefa/salvar")
                                     .hasAnyAuthority("administrador", "presidente")
                                 .requestMatchers(HttpMethod.GET, "/tarefa/listar")
-                                    .hasAnyAuthority("administrador", "presidente", "membro")
+                                    .hasAnyAuthority("administrador", "presidente")
                                 .requestMatchers(HttpMethod.GET, "/tarefa/concluidas")
                                     .hasAnyAuthority("administrador", "presidente")
                                 .requestMatchers(HttpMethod.PUT, "tarefa/atualizarTarefa")
@@ -58,7 +59,7 @@ public class SecurityConfig {
                                     .hasAnyAuthority("administrador", "presidente")
                                 .requestMatchers(HttpMethod.GET, "/tarefa/tarefas/{usuarioId}")
                                     .hasAnyAuthority("administrador", "presidente", "membro")
-                                .requestMatchers(HttpMethod.GET, "/tarefa/buscarTarefa/{id}")
+                                .requestMatchers(HttpMethod.GET, "/tarefa/buscarTarefa/{tarefaId}")
                                     .hasAnyAuthority("administrador", "presidente", "membro")
 
                                 // Endpoint para sessões

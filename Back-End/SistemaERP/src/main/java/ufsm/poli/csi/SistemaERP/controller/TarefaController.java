@@ -60,10 +60,10 @@ public class TarefaController {
     }
 
 
-    @GetMapping("/buscarTarefa/{id}")
-    public ResponseEntity<TarefaDTO> buscarTarefa(@PathVariable Long id) {
+    @GetMapping("/buscarTarefa/{tarefaId}")
+    public ResponseEntity<TarefaDTO> buscarTarefa(@PathVariable Long tarefaId) {
         try {
-            Tarefa tarefa = tarefaService.buscarTarefaPorId(id);
+            Tarefa tarefa = tarefaService.buscarTarefaPorId(tarefaId);
             return ResponseEntity.ok(new TarefaDTO(tarefa));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
