@@ -1,8 +1,12 @@
 import { Home, ClipboardList, ListCheck, FolderCog, LogOut, UserCog } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@/context/UserContext';
 
 export default function Sidebar() {
     const router = useRouter();
+    const { user } = useUser();
+
+    const isAdmin = user?.tipoUsuario === 'administrador' || user?.tipoUsuario === 'presidente';
 
     const handleHome = () => {
         router.push("/");
@@ -33,8 +37,8 @@ export default function Sidebar() {
         router.push("/gerenciarTarefas");
     }
 
-    const handleCadastrarUsuario = () => {
-        router.push("/cadastrar");
+    const handleGerenciarUsuario = () => {
+        router.push("/gerenciarUsuarios");
     }
 
      return (
@@ -58,29 +62,33 @@ export default function Sidebar() {
                     <ClipboardList size={20} className="text-white"/>
                 </button>
 
-                <button
-                    onClick={handleConcluidas}
-                    className="w-12 h-12 hover:bg-blue-700 rounded-full flex items-center justify-center transition-colors"
-                    style={{backgroundColor: 'rgba(255,255,255,0.1)'}}
-                >
-                    <ListCheck size={20} className="text-white"/>
-                </button>
+                {isAdmin && (
+                    <>
+                        <button
+                            onClick={handleConcluidas}
+                            className="w-12 h-12 hover:bg-blue-700 rounded-full flex items-center justify-center transition-colors"
+                            style={{backgroundColor: 'rgba(255,255,255,0.1)'}}
+                        >
+                            <ListCheck size={20} className="text-white"/>
+                        </button>
 
-                <button
-                    onClick={handleGerenciarTarefas}
-                    className="w-12 h-12 hover:bg-blue-700 rounded-full flex items-center justify-center transition-colors"
-                    style={{backgroundColor: 'rgba(255,255,255,0.1)'}}
-                >
-                    <FolderCog size={20} className="text-white"/>
-                </button>
+                        <button
+                            onClick={handleGerenciarTarefas}
+                            className="w-12 h-12 hover:bg-blue-700 rounded-full flex items-center justify-center transition-colors"
+                            style={{backgroundColor: 'rgba(255,255,255,0.1)'}}
+                        >
+                            <FolderCog size={20} className="text-white"/>
+                        </button>
 
-                <button
-                    onClick={handleCadastrarUsuario}
-                    className="w-12 h-12 hover:bg-blue-700 rounded-full flex items-center justify-center transition-colors"
-                    style={{backgroundColor: 'rgba(255,255,255,0.1)'}}
-                >
-                    <UserCog size={20} className="text-white"/>
-                </button>
+                        <button
+                            onClick={handleGerenciarUsuario}
+                            className="w-12 h-12 hover:bg-blue-700 rounded-full flex items-center justify-center transition-colors"
+                            style={{backgroundColor: 'rgba(255,255,255,0.1)'}}
+                        >
+                            <UserCog size={20} className="text-white"/>
+                        </button>
+                    </>
+                )}
             </div>
             
             {/* Logout Button */}

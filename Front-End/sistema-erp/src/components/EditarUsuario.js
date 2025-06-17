@@ -119,7 +119,7 @@ const EditarUsuario = ({ usuarioId }) => {
 
             await api.put(`/usuario/atualizarUsuario`, usuarioAtualizado);
             alert('Usuário atualizado com sucesso!');
-            window.location.href = '/cadastrar';
+            window.location.href = '/gerenciarUsuarios';
         } catch (error) {
             console.error("Erro ao atualizar usuário: ", error);
             setError("Erro ao salvar alterações do usuário");
@@ -129,8 +129,8 @@ const EditarUsuario = ({ usuarioId }) => {
     };
 
     const handleCancelar = () => {
-        window.location.href = '/cadastrar';
-        console.log('Cancelar - navegar para /cadastrar');
+        window.location.href = '/gerenciarUsuarios';
+        console.log('Cancelar - navegar para /gerenciarUsuarios');
     };
 
     const formatarCargaHoraria = (horas) => {

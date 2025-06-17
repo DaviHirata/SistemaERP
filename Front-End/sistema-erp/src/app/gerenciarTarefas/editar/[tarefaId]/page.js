@@ -17,7 +17,10 @@ export default function EditarTarefaPage() {
     if (!token) {
       router.push("/login");
     }
-  }, [router]);
+    if (user && user.tipoUsuario === 'membro') {
+      router.push('/');
+    }
+  }, [user, router]);
 
   if (loadingUser) {
     return <div>Carregando usuário...</div>;
