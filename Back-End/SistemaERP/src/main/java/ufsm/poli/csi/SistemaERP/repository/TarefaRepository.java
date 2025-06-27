@@ -16,12 +16,13 @@ public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
 
     List<Tarefa> findTarefaByUsuarioUsuarioId(Long usuarioId);
 
+    @Query(value = "SELECT * FROM tarefa WHERE status != 'concluido' AND usuario_id = :usuarioId", nativeQuery = true)
+    List<Tarefa> findTarefaNaoConcluidaByUsuarioId(@Param("usuarioId") Long usuarioId);
+
     @Query(value = "SELECT * FROM tarefa WHERE status = 'concluido'", nativeQuery = true)
     List<Tarefa> findTarefaConcluidas();
 
-    @Transactional
     @Modifying
-    @Query("UPDATE Tarefa t SET t.totalHorasTrabalhadas = t.totalHorasTrabalhadas + :nanos WHERE t.tarefaId = :tarefaId")
-    void incrementarNanosTrabalhados(@Param("tarefaId") Long tarefaId, @Param("nanos") long nanos);
-
+    @Query("UPDATE Tarefa t SET t.totalHorasTrabalhadas = :nanos WHERE t.tarefaId = :tarefaId")
+    void atualizarTotalHorasTrabalhadas(@Param("tarefaId") Long tarefaId, @Param("nanos") Long nanos);
 }

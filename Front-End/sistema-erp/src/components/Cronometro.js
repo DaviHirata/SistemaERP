@@ -102,7 +102,7 @@ export default function Cronometro() {
         return;
       }
 
-      const response = await api.get(`/tarefa/tarefas/${usuarioId}`);
+      const response = await api.get(`/tarefa/tarefasNaoConcluidas/${usuarioId}`);
       if (response.data) {
         setTarefas(response.data);
         setTarefasFiltradas(response.data);

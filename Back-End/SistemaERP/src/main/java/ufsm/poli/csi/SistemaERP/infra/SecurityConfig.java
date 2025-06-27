@@ -59,6 +59,8 @@ public class SecurityConfig {
                                     .hasAnyAuthority("administrador", "presidente")
                                 .requestMatchers(HttpMethod.GET, "/tarefa/tarefas/{usuarioId}")
                                     .hasAnyAuthority("administrador", "presidente", "membro")
+                                .requestMatchers("tarefa/tarefasNaoConcluidas/{usuarioId}")
+                                    .hasAnyAuthority("administrador", "presidente", "membro")
                                 .requestMatchers(HttpMethod.GET, "/tarefa/buscarTarefa/{tarefaId}")
                                     .hasAnyAuthority("administrador", "presidente", "membro")
 

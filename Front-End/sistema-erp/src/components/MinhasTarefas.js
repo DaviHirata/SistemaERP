@@ -11,10 +11,16 @@ const ModalDetalhes = ({ tarefa, onClose, onSave }) => {
         dataInicio: '',
         status: '',
         prazo: '',
-        totalHorasTrabalhadas: '',
+        //totalHorasTrabalhadas: '',
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [sessoes, setSessoes] = useState([]);
+    const [somaDuracoes, setSomaDuracoes] = useState(0);
+
+    useEffect(() => {
+      calcularDuracoesSessoes();
+    }, [])
 
     useEffect(() => {
         if (tarefa) {
@@ -26,10 +32,47 @@ const ModalDetalhes = ({ tarefa, onClose, onSave }) => {
                 dataInicio: tarefa.dataInicio || '',
                 status: tarefa.status || '',
                 prazo: tarefa.prazo ? new Date(tarefa.prazo).toISOString().split('T')[0] : '',
-                totalHorasTrabalhadas: tarefa.totalHorasTrabalhadas || '',
+                //totalHorasTrabalhadas: tarefa.totalHorasTrabalhadas || '',
             });
         }
     }, [tarefa]);
+
+    const converterDuracaoParaMinutos = (duracao) => {
+      if (!duracao || typeof duracao !== 'string') return 0;
+      
+      const regex = /PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/;
+      const matches = duracao.match(regex);
+      
+      if (!matches) return 0;
+      
+      const horas = parseInt(matches[1] || 0);
+      const minutos = parseInt(matches[2] || 0);
+      const segundos = parseInt(matches[3] || 0);
+      
+      return (horas * 60) + minutos + Math.round(segundos / 60);
+    };
+
+    const calcularDuracoesSessoes = async () => {
+        try {
+            const response = await api.get(`/sessao/sessoesTarefa/${tarefa.tarefaId}`);
+            const lista = response.data || [];
+
+            setSessoes(lista);
+
+            // Converter durações ISO 8601 para minutos e depois para nanossegundos
+            const somaMinutos = lista.reduce((acc, sessao) => {
+                const minutos = converterDuracaoParaMinutos(sessao.duracaoTotal);
+                return acc + minutos;
+            }, 0);
+            
+            // Converter minutos para nanossegundos para usar com sua função formatarHoras
+            const somaNanossegundos = somaMinutos * 60 * 1e9; // minutos * 60 segundos * 1 bilhão nanossegundos
+            
+            setSomaDuracoes(somaNanossegundos);
+        } catch (err) {
+            console.error("Erro ao buscar sessões:", err);
+        }
+    }
 
     const handleInputChange = (field, value) => {
         setFormData(prev => ({...prev, [field]: value}));
@@ -68,7 +111,7 @@ const ModalDetalhes = ({ tarefa, onClose, onSave }) => {
                 dataInicio: formData.dataInicio,
                 status: formData.status,
                 prazo: new Date(formData.prazo).toISOString(),
-                totalHorasTrabalhadas: formData.totalHorasTrabalhadas,
+                //totalHorasTrabalhadas: formData.totalHorasTrabalhadas,
             };
 
             await api.put(`/tarefa/atualizarTarefa`, tarefaAtualizada);
@@ -136,8 +179,9 @@ const ModalDetalhes = ({ tarefa, onClose, onSave }) => {
             <input 
               className="w-full border rounded px-2 py-1 bg-gray-100 text-black" 
               type="text"
-              value={formatarHoras(formData.totalHorasTrabalhadas)}
+              //value={formatarHoras(formData.totalHorasTrabalhadas)}
               //value={formData.totalHorasTrabalhadas}
+              value={formatarHoras(somaDuracoes)}
               readOnly
             />
 

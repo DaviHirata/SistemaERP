@@ -3,6 +3,7 @@ package ufsm.poli.csi.SistemaERP.service;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ufsm.poli.csi.SistemaERP.dto.SessaoDTO;
 import ufsm.poli.csi.SistemaERP.dto.TarefaDTO;
 import ufsm.poli.csi.SistemaERP.model.Sessao;
 import ufsm.poli.csi.SistemaERP.model.Tarefa;
@@ -97,11 +98,11 @@ public class TarefaService {
         }
 
         // Buscar todas as sessões validadas da tarefa
-        List<Sessao> sesoesValidadas = sessaoRepository.findByTarefa_TarefaIdAndValidadoTrue(tarefaId);
+        List<SessaoDTO> sesoesValidadas = sessaoRepository.findByTarefa_TarefaIdAndValidadoTrue(tarefaId);
 
         // Somar duração total
         long totalHoras = 0L;
-        for (Sessao sessao : sesoesValidadas) {
+        for (SessaoDTO sessao : sesoesValidadas) {
             if (sessao.getDuracaoTotal() != null) {
                 totalHoras += sessao.getDuracaoTotal().toHours();
             }

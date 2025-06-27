@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '@/services/api';
+import { formatarHoras } from '@/utils/formatarHoras';
 
 const EditarTarefa = ({ tarefaId }) => {
     const [formData, setFormData] = useState({
@@ -178,12 +179,12 @@ const EditarTarefa = ({ tarefaId }) => {
         console.log('Cancelar - navegar para /gerenciarTarefas');
     }
 
-    const formatarHoras = (horas) => {
+    /*const formatarHoras = (horas) => {
         if (!horas) return '0h 0min';
         const horasInt = Math.floor(horas);
         const minutos = Math.round((horas - horasInt) * 60);
         return `${horasInt}h ${minutos}min`;
-    };
+    };*/
 
     if (loadingTarefa) {
         return (

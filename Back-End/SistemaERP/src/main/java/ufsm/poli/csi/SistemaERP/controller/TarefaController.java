@@ -59,6 +59,12 @@ public class TarefaController {
         return ResponseEntity.ok(dtos);
     }
 
+    @GetMapping("/tarefasNaoConcluidas/{usuarioId}")
+    public ResponseEntity<List<TarefaDTO>> listarTarefasNaoConcluidasDoUsuario(@PathVariable Long usuarioId) {
+        List<Tarefa> tarefas = tarefaRepository.findTarefaNaoConcluidaByUsuarioId(usuarioId);
+        List<TarefaDTO> dtos = tarefas.stream().map(TarefaDTO::new).collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
+    }
 
     @GetMapping("/buscarTarefa/{tarefaId}")
     public ResponseEntity<TarefaDTO> buscarTarefa(@PathVariable Long tarefaId) {

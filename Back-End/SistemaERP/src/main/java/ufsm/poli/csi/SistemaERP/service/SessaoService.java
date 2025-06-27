@@ -14,6 +14,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class SessaoService {
@@ -33,6 +34,12 @@ public class SessaoService {
         Tarefa tarefa = tarefaRepository.findById(sessaoDTO.getTarefaId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Tarefa não encontrada com id: " + sessaoDTO.getTarefaId()));
+
+        // Impedir uma sessão de ser iniciada se já estiver marcada como concluída
+        if (tarefa.getStatus() == Tarefa.StatusTarefa.concluido) {
+            throw new IllegalStateException("Não é possível iniciar uma sessão para uma" +
+                    "tarefa que já está concluída");
+        }
 
         // Atualizar o status da tarefa para "em_andamento" se ainda estiver "pendente"
         if (tarefa.getStatus() == Tarefa.StatusTarefa.pendente) {
@@ -77,14 +84,11 @@ public class SessaoService {
         sessao.setDuracaoTotal(duracaoFinal);
         sessaoRepository.save(sessao);
 
-        // Associar a tarefa e atualizar tempo trabalhado
+        // Associar à tarefa
         Tarefa tarefa = sessao.getTarefa();
-        if (tarefa != null) {
-            long nanos = duracaoFinal.toNanos();
-            tarefaRepository.incrementarNanosTrabalhados(tarefa.getTarefaId(), nanos);
-        }
     }
 
+    @Transactional
     public void validarSessao(Long sessaoId, String acao) {
         Sessao sessao = sessaoRepository.findById(sessaoId)
                 .orElseThrow(() -> new EntityNotFoundException("Sessão não encontrada com id: " + sessaoId));
@@ -100,7 +104,28 @@ public class SessaoService {
                 throw new IllegalArgumentException("Ação inválida: use 'ACEITAR' ou 'REJEITAR");
         }
 
+        // Salva a validação da sessão
         sessaoRepository.save(sessao);
+
+        Long tarefaId = sessao.getTarefa().getTarefaId();
+
+        // Verifica se ainda há sessões com validação pendente (null)
+        boolean existePendente = sessaoRepository.existsByTarefa_TarefaIdAndValidadoIsNull(tarefaId);
+
+        if (!existePendente) {
+            // Busca sessões validadas
+            List<SessaoDTO> sessoesValidadas = sessaoRepository.findByTarefa_TarefaIdAndValidadoTrue(tarefaId);
+
+            // Somar a duração total (em nanossegundos)
+            long somaDuracoes = sessoesValidadas.stream()
+                    .map(SessaoDTO::getDuracaoTotal)
+                    .filter(Objects::nonNull)
+                    .mapToLong(Duration::toNanos)
+                    .sum();
+
+            // Atualiza o campo totalHorasTrabalhadas na tarefa
+            tarefaRepository.atualizarTotalHorasTrabalhadas(tarefaId, somaDuracoes);
+        }
     }
 
     public void encerrarSessao(Long sessaoId){

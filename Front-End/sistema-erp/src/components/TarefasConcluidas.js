@@ -11,12 +11,13 @@ const ModalDetalhes = ({ tarefa, onClose, onSave }) => {
         dataInicio: '',
         status: '',
         prazo: '',
-        totalHorasTrabalhadas: '',
+        //totalHorasTrabalhadas: '',
     });
     const [sessoes, setSessoes] = useState([]);
     const [usuario, setUsuario] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [somaDuracoes, setSomaDuracoes] = useState(0);
 
     useEffect(() => {
         if (tarefa) {
@@ -28,7 +29,7 @@ const ModalDetalhes = ({ tarefa, onClose, onSave }) => {
                 dataInicio: tarefa.dataInicio || '',
                 status: tarefa.status || '',
                 prazo: tarefa.prazo ? new Date(tarefa.prazo).toISOString().split('T')[0] : '',
-                totalHorasTrabalhadas: tarefa.totalHorasTrabalhadas
+                //totalHorasTrabalhadas: tarefa.totalHorasTrabalhadas || 0
             });
 
             buscarSessoesTarefa(tarefa.tarefaId);
@@ -41,34 +42,65 @@ const ModalDetalhes = ({ tarefa, onClose, onSave }) => {
         }
     }, [tarefa?.usuarioId]);
 
+    const converterDuracaoParaMinutos = (duracao) => {
+      if (!duracao || typeof duracao !== 'string') return 0;
+      
+      const regex = /PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/;
+      const matches = duracao.match(regex);
+      
+      if (!matches) return 0;
+      
+      const horas = parseInt(matches[1] || 0);
+      const minutos = parseInt(matches[2] || 0);
+      const segundos = parseInt(matches[3] || 0);
+      
+      return (horas * 60) + minutos + Math.round(segundos / 60);
+    };
+
     const buscarSessoesTarefa = async (tarefaId) => {
         try {
             const response = await api.get(`/sessao/sessoesTarefa/${tarefaId}`);
-            if (response.data && Array.isArray(response.data)) {
-                // Mapear os campos da API para o formato esperado pelo componente
-                const sessoesFormatadas = response.data.map(sessao => ({
+            const lista = response.data || [];
+
+            if (Array.isArray(lista)) {
+                // 1. Processar para exibição na tabela (conversão para horas decimais)
+                const sessoesFormatadas = lista.map(sessao => ({
                     id: sessao.sessaoId,
                     data: sessao.inicioSessao,
-                    tempoGasto: parseDuracao(sessao.duracaoTotal),
+                    tempoGasto: parseDuracao(sessao.duracaoTotal), // Para exibir na tabela
                     validado: sessao.validado,
-                    // Manter os campos originais também
                     sessaoId: sessao.sessaoId,
                     inicioSessao: sessao.inicioSessao,
                     fimSessao: sessao.fimSessao,
                     duracaoTotal: sessao.duracaoTotal
                 }));
+
+                // 2. Calcular soma total em nanossegundos (para usar com formatarHoras)
+                const somaMinutos = lista.reduce((acc, sessao) => {
+                    const minutos = converterDuracaoParaMinutos(sessao.duracaoTotal);
+                    return acc + minutos;
+                }, 0);
+                
+                const somaNanossegundos = somaMinutos * 60 * 1e9;
+
+                // 3. Atualizar estados
                 setSessoes(sessoesFormatadas);
+                setSomaDuracoes(somaNanossegundos);
+                
                 console.log('Sessões carregadas:', sessoesFormatadas);
+                console.log('Soma total em nanossegundos:', somaNanossegundos);
             } else {
                 console.log('Nenhuma sessão encontrada ou formato inválido');
                 setSessoes([]);
+                setSomaDuracoes(0);
             }
         } catch (error) {
             console.error("Erro ao buscar sessões da tarefa: ", error);
             setError("Erro ao carregar sessões da tarefa");
             setSessoes([]);
+            setSomaDuracoes(0);
         }
-    }
+    };
 
     // Função para converter duração ISO 8601 para horas
     const parseDuracao = (duracao) => {
@@ -222,7 +254,8 @@ const ModalDetalhes = ({ tarefa, onClose, onSave }) => {
                                 <label className="font-bold block text-black mb-1">Horas trabalhadas</label>
                                 <input 
                                     className="w-full bg-blue-200 px-3 py-2 rounded border-none" 
-                                    value={formatarHoras(tarefa.totalHorasTrabalhadas)}
+                                    //value={formatarHoras(tarefa.totalHorasTrabalhadas)}
+                                    value={formatarHoras(somaDuracoes)}
                                     readOnly
                                 />
                             </div>
@@ -257,9 +290,9 @@ const ModalDetalhes = ({ tarefa, onClose, onSave }) => {
                                 </tr>
                             ) : (
                                 sessoes.map((sessao) => (
-                                    <tr key={sessao.id}>
+                                    <tr key={sessao.sessaoId || sessao.id}>
                                         <td className="border border-gray-300 px-4 py-2">
-                                            {formatarData(sessao.data)}
+                                            {formatarData(sessao.inicioSessao)}
                                         </td>
                                         <td className="border border-gray-300 px-4 py-2">
                                             {(sessao.tempoGasto)}h
