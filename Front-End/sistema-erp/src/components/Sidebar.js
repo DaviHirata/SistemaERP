@@ -1,4 +1,4 @@
-import { Home, ClipboardList, ListCheck, FolderCog, LogOut, UserCog } from 'lucide-react';
+import { Home, ClipboardList, ListCheck, FolderCog, LogOut, UserCog, ChartColumn } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/context/UserContext';
 
@@ -39,6 +39,10 @@ export default function Sidebar() {
 
     const handleGerenciarUsuario = () => {
         router.push("/gerenciarUsuarios");
+    }
+
+    const handleRelatorios = () => {
+        router.push("/relatorio");
     }
 
      return (
@@ -86,6 +90,14 @@ export default function Sidebar() {
                             style={{backgroundColor: 'rgba(255,255,255,0.1)'}}
                         >
                             <UserCog size={20} className="text-white"/>
+                        </button>
+
+                        <button
+                            onClick={handleRelatorios}
+                            className="w-12 h-12 hover:bg-blue-700 rounded-full flex items-center justify-center transition-colors"
+                            style={{backgroundColor: 'rgba(255,255,255,0.1)'}}
+                        >
+                            <ChartColumn size={20} className="text=white"/>
                         </button>
                     </>
                 )}

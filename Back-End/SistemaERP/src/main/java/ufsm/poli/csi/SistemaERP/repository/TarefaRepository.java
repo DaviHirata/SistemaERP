@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ufsm.poli.csi.SistemaERP.model.Tarefa;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -25,4 +26,11 @@ public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
     @Modifying
     @Query("UPDATE Tarefa t SET t.totalHorasTrabalhadas = :nanos WHERE t.tarefaId = :tarefaId")
     void atualizarTotalHorasTrabalhadas(@Param("tarefaId") Long tarefaId, @Param("nanos") Long nanos);
+
+    @Query("SELECT t FROM Tarefa t WHERE t.usuario.usuarioId = :usuarioId AND t.dataConclusao " +
+            "BETWEEN :inicio AND :fim")
+    List<Tarefa> findByUsuarioAndDataConclusaoBetween(@Param("usuarioId") Long usuarioId,
+                                                      @Param("inicio") LocalDateTime inicio,
+                                                      @Param("fim") LocalDateTime fim);
+
 }

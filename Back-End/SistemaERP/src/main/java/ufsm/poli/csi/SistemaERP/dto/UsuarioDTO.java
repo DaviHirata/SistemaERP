@@ -12,16 +12,16 @@ import ufsm.poli.csi.SistemaERP.model.Usuario;
 @NoArgsConstructor
 public class UsuarioDTO {
     private Long usuarioId;
-    private String nome_completo;
+    private String nomeCompleto;
     private String email;
-    private int carga_horaria_semanal;
-    private String tipo_usuario;
+    private int cargaHorariaSemanal;
+    private String tipoUsuario;
 
     public UsuarioDTO(Usuario usuario) {
         this.usuarioId = usuario.getUsuarioId();
-        this.nome_completo = usuario.getNomeCompleto();
+        this.nomeCompleto = usuario.getNomeCompleto();
         this.email = usuario.getEmail();
-        this.carga_horaria_semanal = usuario.getCargaHorariaSemanal();
-        this.tipo_usuario = String.valueOf(usuario.getTipoUsuario());
+        this.cargaHorariaSemanal = usuario.getCargaHorariaSemanal();
+        this.tipoUsuario = String.valueOf(usuario.getTipoUsuario());
     }
 }

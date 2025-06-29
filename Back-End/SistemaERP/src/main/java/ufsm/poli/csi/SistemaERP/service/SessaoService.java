@@ -50,7 +50,7 @@ public class SessaoService {
         Sessao sessao = new Sessao();
         sessao.setTarefa(tarefa);
         sessao.setInicioSessao(LocalDateTime.now());
-        sessao.setValidado(false);
+        sessao.setValidado(null);
         this.sessaoRepository.save(sessao);
 
         return sessao.getSessaoId();

@@ -3,13 +3,16 @@ package ufsm.poli.csi.SistemaERP.controller;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+import ufsm.poli.csi.SistemaERP.dto.RelatorioUsuarioDTO;
 import ufsm.poli.csi.SistemaERP.dto.UsuarioDTO;
 import ufsm.poli.csi.SistemaERP.model.Usuario;
 import ufsm.poli.csi.SistemaERP.service.UsuarioService;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +48,14 @@ public class UsuarioController {
     public ResponseEntity atualizarUsuario(@RequestBody Usuario usuario) {
         this.usuarioService.atualizarUsuario(usuario);
         return ResponseEntity.ok(usuario);
+    }
+
+    @GetMapping("/relatorio")
+    public ResponseEntity<List<RelatorioUsuarioDTO>> gerarRelatorio(
+            @RequestParam("dataInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
+            @RequestParam("dataFim") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim) {
+        List<RelatorioUsuarioDTO> relatorio = usuarioService.gerarRelatorio(dataInicio, dataFim);
+        return ResponseEntity.ok(relatorio);
     }
 
     @DeleteMapping("/deletarUsuario/{id}")

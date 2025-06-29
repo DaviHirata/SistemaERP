@@ -45,6 +45,8 @@ public class SecurityConfig {
                                     .hasAnyAuthority("administrador", "presidente")
                                 .requestMatchers(HttpMethod.GET, "/usuario/buscarUsuario/{id}")
                                     .hasAnyAuthority("administrador", "presidente")
+                                .requestMatchers(HttpMethod.GET, "/usuario/relatorio")
+                                    .hasAnyAuthority("administrador", "presidente")
 
                                 // Endpoint para tarefas
                                 .requestMatchers(HttpMethod.POST, "/tarefa/salvar")
