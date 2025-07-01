@@ -188,14 +188,14 @@ const EditarTarefa = ({ tarefaId }) => {
 
     if (loadingTarefa) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 flex items-center justify-center">
+            <div className="min-h-screen bg-gradient-to-br flex items-center justify-center">
                 <div className="text-white text-xl">Carregando...</div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 p-6">
+        <div className="min-h-screen bg-gradient-to-br p-6">
             <div className="max-w-6xl mx-auto">
                 {/* Header */}
                 <div className="mb-8">
