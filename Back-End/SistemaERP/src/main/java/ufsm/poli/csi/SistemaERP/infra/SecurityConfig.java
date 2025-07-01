@@ -90,6 +90,18 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, "/intervalo/deletarIntervalo/{id}")
                                     .hasAnyAuthority("administrador", "presidente")
 
+                                // Endpoint para mensagens
+                                .requestMatchers(HttpMethod.POST, "/mensagem/salvar")
+                                    .hasAnyAuthority("administrador", "presidente"/*, "membro"*/)
+                                .requestMatchers(HttpMethod.GET, "/mensagem/lidas/{usuarioId}")
+                                    .hasAnyAuthority("administrador", "presidente", "membro")
+                                .requestMatchers(HttpMethod.GET, "/mensagem/naoLidas/{usuarioId}")
+                                    .hasAnyAuthority("administrador", "presidente", "membro")
+                                .requestMatchers(HttpMethod.PATCH, "/mensagem/marcarComoLida/{mensagemId}")
+                                    .hasAnyAuthority("administrador", "presidente", "membro")
+                                .requestMatchers(HttpMethod.DELETE, "/mensagem/deletar/{mensagemId}")
+                                    .hasAnyAuthority("administrador", "presidente", "membro")
+
                                 .requestMatchers("/error").permitAll()
                                 .anyRequest().authenticated())
                 .addFilterBefore(this.autenticacaoFilter, UsernamePasswordAuthenticationFilter.class)
@@ -122,6 +134,7 @@ public class SecurityConfig {
         configuration.addAllowedMethod("PUT");
         configuration.addAllowedMethod("DELETE");
         configuration.addAllowedMethod("OPTIONS");
+        configuration.addAllowedMethod("PATCH");
 
         // Headers permitidos
         configuration.addAllowedHeader("*");

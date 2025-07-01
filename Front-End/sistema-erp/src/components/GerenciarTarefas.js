@@ -81,11 +81,25 @@ const ModalNovaTarefa = ({ isOpen, onClose, onSave }) => {
       };
 
       await api.post('/tarefa/salvar', novaTarefa);
+
+      // Enviar notificação para o responsável
+      const remetente = JSON.parse(localStorage.getItem('usuario'));
+
+      const mensagem = {
+        remetente: { usuarioId: remetente.usuarioId || remetente.id },
+        destinatario: { usuarioId: formData.usuarioId },
+        texto: `Você foi atribuído(a) a uma nova tarefa: "${formData.titulo}"`,
+        tipo: "notificacao",
+        //dataEnvio: new Date().toISOString(),
+      };
+
+      await api.post('/mensagem/salvar', mensagem);
+
       onSave();
       onClose();
     } catch (error) {
-      console.error("Erro ao criar tarefa: ", error);
-      setError("Erro ao criar nova tarefa");
+      console.error("Erro ao criar tarefa ou enviar notificação: ", error);
+      setError("Erro ao criar nova tarefa ou notificar responsável");
     } finally {
       setLoading(false);
     }
@@ -334,7 +348,7 @@ const TarefasCriadas = () => {
   }
 
   return (
-    <div className="min-h-screen bg-blue-900 p-6">
+    <div className="min-h-screen p-6">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-white">Tarefas criadas</h1>

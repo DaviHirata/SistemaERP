@@ -81,13 +81,32 @@ const GerarRelatorio = () => {
     return date.toLocaleDateString('pt-BR');
   };
 
-  const handleAlertar = (usuario) => {
-    // Implementar funcionalidade de alerta
-    alert(`Alertar ${usuario.nomeCompleto} sobre baixo desempenho`);
+  const handleAlertar = async (usuario) => {
+      const remetente = JSON.parse(localStorage.getItem('usuario')); // quem está logado (presidente ou admin)
+
+      if (!remetente || !(remetente.usuarioId || remetente.id)) {
+        alert("Usuário logado não identificado.");
+        return;
+      }
+
+      const mensagem = {
+        remetente: { usuarioId: remetente.usuarioId || remetente.id },
+        destinatario: { usuarioId: usuario.usuarioId },
+        texto: `Você realizou apenas ${usuario.totalHorasCumpridas.toFixed(1)} horas no período de ${formatarData(dataInicio)} a ${formatarData(dataFim)}, abaixo da sua carga horária esperada de ${usuario.cargaHorariaSemanal} horas.`,
+        tipo: "alerta",
+        dataEnvio: new Date().toISOString()
+      };
+
+      try {
+        await api.post('/mensagem/salvar', mensagem);
+        alert(`Alerta enviado para ${usuario.nomeCompleto}.`);
+      } catch (error) {
+        console.error("Erro ao enviar alerta:", error);
+        alert("Erro ao enviar alerta.");
+      }
   };
 
   const exportarRelatorio = () => {
-    // Implementar funcionalidade de exportação
     const csvContent = "data:text/csv;charset=utf-8," 
       + "Usuário,Total de Horas,Carga Horária Esperada,Status\n"
       + relatorioData.map(usuario => 
